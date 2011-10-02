@@ -13,6 +13,38 @@ KEEP copies of these 2 files on ANOTHER DRIVE
 then use gparted to expand the NTFS volume as you please.
 NOTE: after you do this when windows asks to scan the drive DON'T
 
+===To backup and restore boot sector===
+where:   /path/to/ComputerName_DriveName_date.boot = path and name of backup file
+         /dev/hd = device name
+print list of devices:
+fdisk -l
+To backup boot sector:
+dd if=/dev/hd of=/path/to/ComputerName_DriveName_date.boot bs=512 count=1
+To restore a boot sector:
+dd if=/path/to/ComputerName_DriveName_date.boot of=/dev/hd
+
+===To backup or restore NTFS partitions===
+BEFORE YOU backup a Windows partition. ALWAYS make sure you have deleted all the non-empty entries in:
+"regedit-> HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
+
+where:   /dev/hdX = device name followed by partition # "X"
+         /path/to/ComputerName_OSname_backup_date.bin.gz = path and name of backup file
+print list of devices:
+fdisk -l
+To backup partition:
+"ntfsclone -s /dev/hdX -o - | gzip -c > /path/to/ComputerName_OSname.ntfsclone.gz"
+or
+"ntfsclone -s /dev/hdX -o - | xz -9ekvcC sha256 > /path/to/ComputerName_OSname.ntfsclone.xz"
+
+"ntfsclone --save-image --output - /dev/hdX | gzip -c > /path/to/ComputerName_OSname_backup_date.bin.gz"
+To restore a partition:
+"gzip -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone --restore-image --overwrite /dev/hdX -"
+or
+"xz-dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone --restore-image --overwrite /dev/hdX -"
+
+IMPORTANT--> after you clone the partition to any location it is an exact copy and WILL NOT work OR be repairable unless it is in the EXACT SAME LOCATION;
+The offset that is stored in the boot sector will be wrong. to fix this we MUST change the offset. see "Moving NTFS VOLUMES"
+
 ==restoring from previous backup==
 restore the boot sector with out destroying the "partition info", restoring just the Windows "partition info"
 refer to mbr info to do this
@@ -56,34 +88,6 @@ At the first setup screen (Language, Keyboard, etc.) press SHIFT+F10. This will 
 
 Type Exit to leave Diskpart. Type Exit to close the command prompt. Now continue with the install. When you get to the partition screen, highlight the partition you just created and click Next. Windows will install to the partition you created and not create the 100MB boot partition. Instead, you will see a C:\Boot folder when the install is finished (like Vista has).
 /*end Windows7 install*/
-
-===To backup and restore boot sector===
-where:   /path/to/ComputerName_DriveName_date.boot = path and name of backup file
-         /dev/hd = device name
-print list of devices:
-fdisk -l
-To backup boot sector:
-dd if=/dev/hd of=/path/to/ComputerName_DriveName_date.boot bs=512 count=1
-To restore a boot sector:
-dd if=/path/to/ComputerName_DriveName_date.boot of=/dev/hd
-
-===To backup or restore NTFS partitions===
-BEFORE YOU backup a Windows partition. ALWAYS make sure you have deleted all the non-empty entries in:
-"regedit-> HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
-
-where:   /dev/hdX = device name followed by partition # "X"
-         /path/to/ComputerName_OSname_backup_date.bin.gz = path and name of backup file
-print list of devices:
-fdisk -l
-To backup partition:
-"ntfsclone -s /dev/hdX -o - | gzip -c > /path/to/ComputerName_OSname.ntfsclone.gz"
-
-"ntfsclone --save-image --output - /dev/hdX | gzip -c > /path/to/ComputerName_OSname_backup_date.bin.gz"
-To restore a partition:
-"gunzip -c /path/to/ComputerName_OSname_backup_date.bin.gz | ntfsclone --restore-image --overwrite /dev/hdX -"
-
-IMPORTANT--> after you clone the partition to any location it is an exact copy and WILL NOT work OR be repairable unless it is in the EXACT SAME LOCATION;
-The offset that is stored in the boot sector will be wrong. to fix this we MUST change the offset. see "Moving NTFS VOLUMES"
 
 ===Moving NTFS partitions===
 special thanx to Michael Dominok @ http://www.dominok.net/en/it/en.it.clonexp.html
