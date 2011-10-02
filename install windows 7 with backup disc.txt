@@ -1,0 +1,142 @@
+==install windows with backup disc==
+CLEAR the drive and create a 12.5gb partition as the 1st partition, this can be done with gparted.
+
+Install Windows to the 1st 12.5gb partition; if you have Vista or Win7 view the problem(and solution) about doing this.
+
+Install minimal amounts of drivers and software
+
+Using non confusing names that give all pertinent info about the files for instance the name of computer and date of backup.
+backup the boot sector
+backup the Windows partition
+KEEP copies of these 2 files on ANOTHER DRIVE
+
+then use gparted to expand the NTFS volume as you please.
+NOTE: after you do this when windows asks to scan the drive DON'T
+
+==restoring from previous backup==
+restore the boot sector with out destroying the "partition info", restoring just the Windows "partition info"
+refer to mbr info to do this
+EXAMPLE:dd if=/media/sda2/WINXPSR1930NXbackup10-8-2010.boot bs=462 count=1 of=/dev/sda
+
+restore the windows partition then grow it as you wish.
+NOTE: after you do this if windows asks to scan the drive DON'T.
+
+you are done.
+
+===MBR INFO===
+MBR SECTOR NAME				BYTES
+code area					440(max. 446)
+disk signature (optional)	4
+Usually nulls; 0x0000		2
+Table of primary partitions	64(Four 16-byte entries, IBM partition table scheme)
+MBR signature;0xAA55		2
+
+MBR, total size: 446 + 64 + 2 =	512
+
+===Vista or WIN7 extra 100mb partition problem===
+Use the following from UkonCornelias to prevent WIN7 or Vista from creating a useless 100MB boot partition
+@http://social.technet.microsoft.com/Forums/en/w7itproinstall/thread/51442b60-c2dc-457d-92a7-a49cbbcbbf2f:
+
+During Setup, if you create a new partition on a clean HDD (no partitions), or delete all partitions and then create a new one - from the Partition screen in Setup, Win7 will create the 100MB boot partition, and you can't stop it/cancel it. If you want to install Win7 to a clean HDD, but don't want the boot partition do this:
+
+At the first setup screen (Language, Keyboard, etc.) press SHIFT+F10. This will open a command prompt window. Enter the following diskpart commands to create a partition.
+
+- Diskpart
+- List disk
+(this command is important. It will show you what disk drives you have. Most likely your hard drive will be will be Disk 0, but you need to check it first.)
+
+- select disk 0
+- clean
+- create partition primary size=12500
+(this creates a partition 12500MB or 12.5gB in size. this is the minimum size I have ever had a successful install with; If you want to use the whole hard drive, just leave off the size=number)
+
+- select partition 1
+- active
+- format fs=ntfs quick label="WINDOWS"
+
+Type Exit to leave Diskpart. Type Exit to close the command prompt. Now continue with the install. When you get to the partition screen, highlight the partition you just created and click Next. Windows will install to the partition you created and not create the 100MB boot partition. Instead, you will see a C:\Boot folder when the install is finished (like Vista has).
+/*end Windows7 install*/
+
+===To backup and restore boot sector===
+where:   /path/to/ComputerName_DriveName_date.boot = path and name of backup file
+         /dev/hd = device name
+print list of devices:
+fdisk -l
+To backup boot sector:
+dd if=/dev/hd of=/path/to/ComputerName_DriveName_date.boot bs=512 count=1
+To restore a boot sector:
+dd if=/path/to/ComputerName_DriveName_date.boot of=/dev/hd
+
+===To backup or restore NTFS partitions===
+BEFORE YOU backup a Windows partition. ALWAYS make sure you have deleted all the non-empty entries in:
+"regedit-> HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
+
+where:   /dev/hdX = device name followed by partition # "X"
+         /path/to/ComputerName_OSname_backup_date.bin.gz = path and name of backup file
+print list of devices:
+fdisk -l
+To backup partition:
+"ntfsclone -s /dev/hdX -o - | gzip -c > /path/to/ComputerName_OSname.ntfsclone.gz"
+
+"ntfsclone --save-image --output - /dev/hdX | gzip -c > /path/to/ComputerName_OSname_backup_date.bin.gz"
+To restore a partition:
+"gunzip -c /path/to/ComputerName_OSname_backup_date.bin.gz | ntfsclone --restore-image --overwrite /dev/hdX -"
+
+IMPORTANT--> after you clone the partition to any location it is an exact copy and WILL NOT work OR be repairable unless it is in the EXACT SAME LOCATION;
+The offset that is stored in the boot sector will be wrong. to fix this we MUST change the offset. see "Moving NTFS VOLUMES"
+
+===Moving NTFS partitions===
+special thanx to Michael Dominok @ http://www.dominok.net/en/it/en.it.clonexp.html
+
+Now, the boot-sectors of the newly cloned partition have to be modified. The partition(s) in front of the new ones have to be "skipped". This is done by inserting an offset into the partitions boot-sector. But first we've got to determine where they start. "fdisk -ul /dev/hda" shows:
+
+   Device Boot      Start         End      Blocks   Id  System
+/dev/hda1   *          63    40965749    20482843+   7  HPFS/NTFS
+/dev/hda2        40965750    81979694    20506972+   7  HPFS/NTFS
+/dev/hda3        81979695   122993639    20506972+   7  HPFS/NTFS
+/dev/hda4       122993640   181582694    29294527+   5  Extended
+/dev/hda5       122993703   181582694    29294496   83  Linux
+
+The interesting values are listed in the "Start"-column but have to be converted into hexadecimal and rearranged in order. "printf "0x%llx\n" 40965750" printfs 40965750 in hexadecimal format "0x2711676"
+"printf "%x" 40965750" would have done, too.
+The hexadecimal value "2711676" has to be rearranged further. The digits have to skewed by pairs following this method:
+	0xABCD EFGH => GHEF CDAB
+	0x031f 9f3e => 3E9F 1F03
+For "2711676" this results in "76167102"
+Since we've got 4 pairs to skew but only 7 digits available we simply add a leading 0. This is as neutral in the hexadecimal system as it is in the more familiar decimal system.
+Now "76167102" has to be inserted into hda2s boot-sector. That's done with "hexedit /dev/hda2"
+Move the cursor to position "0x1c" and type in "76 16 71 02", then save&quit with "<STRG>-X"
+Use the same procedure for hd3. 
+
+This is simply done by running the Vista/7 startup repair.
+Enter the installation DVD -> Select repair and follow the wizard.
+
+other commands====================
+dd if=/dev/sdb bs=900000 | bzip2 > ./360backup.bz2
+
+ntfsclone --save-image --output - /dev/sda1|gzip -c > /media/sda2/WINXPSR1930NXbackup10-8-2010.gz
+bunzip2 -c /media/sda2/WINXPSR1930NXbackup10-8-2010.gz|ntfsclone --restore-image --overwrite /dev/sda1 -"
+
+dd if=backup.boot of=/dev/hda bs=1
+dd if=/dev/sda of=./WINXPSR1930NXbackupboot10-8-2010.bin bs=512 count=1
+dd if=/dev/sda1 | gzip > /media/sda2/WINXPSR1930NXbackup10-8-2010.gz
+
+bzip2 -dc ./WINXPSR1930NXbackup10-8-2010.bz2 | sudo dd of=/dev/hdx
+
+sudo mkdir /mnt/susv3
+sudo mount -osize=100m tmpfs /mnt/susv3 -t tmpfs
+cd '/mnt/susv3' 
+unlzma -ck '/home/glas/Comp Sci/C/susv3.tlz' | tar xvf -
+
+
+dd if=/dev/sda of=/media/sdb1/ComputerName_DriveName_date.boot bs=512 count=1
+ntfsclone -s /dev/sda1 -o /path/to/ComputerName_OSname.ntfsclone
+
+dd if=/dev/sda of=/media/sda2/SR1930NX_sda.boot bs=512 count=1
+ntfsclone -s /dev/sda1 -o /media/sda2/SR1930NX_WinXP.ntfsclone
+
+ntfsclone -r -O /dev/sda1 /media/sda2/SR1930NX_WinXP.ntfsclone
+xz -9ekvC sha256 /media/sda2/SR1930NX_WinXP.ntfsclone
+
+dd of=/dev/hdX if=/path/to/ComputerName.boot
+xz -c /path/to/ComputerName_OSname_backup_date.bin.xz | ntfsclone -r -O /dev/hdX# -
