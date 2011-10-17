@@ -1,3 +1,4 @@
+
 ==install windows with backup disc==
 CLEAR the drive and create a 12.5gb partition as the 1st partition, this can be done with gparted.
 
@@ -8,39 +9,38 @@ Install minimal amounts of drivers and software
 Using non confusing names that give all pertinent info about the files for instance the name of computer and date of backup.
 backup the boot sector
 backup the Windows partition
-KEEP copies of these 2 files on ANOTHER DRIVE
+KEEP copies of these 2 files on ANOTHER DRIVE or cd if you used xz
 
 then use gparted to expand the NTFS volume as you please.
 NOTE: after you do this when windows asks to scan the drive DON'T
 
 ===To backup and restore boot sector===
-where:   /path/to/ComputerName_DriveName_date.boot = path and name of backup file
-         /dev/hd = device name
-print list of devices:
-fdisk -l
+where:   /path/to/ComputerName_DriveName.boot = path and name of backup file
+         /dev/hdX = device name
+print list of devices with "fdisk -l"
 To backup boot sector:
-dd if=/dev/hd of=/path/to/ComputerName_DriveName_date.boot bs=512 count=1
+dd bs=512 count=1 if=/dev/hdX of=/path/to/ComputerName_DriveName.boot
 To restore a boot sector:
-dd if=/path/to/ComputerName_DriveName_date.boot of=/dev/hd
+dd if=/path/to/ComputerName_DriveName.boot of=/dev/hdX
 
 ===To backup or restore NTFS partitions===
-BEFORE YOU backup a Windows partition. ALWAYS make sure you have deleted all the non-empty entries in:
-"regedit-> HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
+BEFORE YOU backup ANY Windows partition. ALWAYS make sure you have used regedit to delete all the non-empty entries in:"HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
 
 where:   /dev/hdX = device name followed by partition # "X"
-         /path/to/ComputerName_OSname_backup_date.bin.gz = path and name of backup file
-print list of devices:
-fdisk -l
-To backup partition:
-"ntfsclone -s /dev/hdX -o - | gzip -c > /path/to/ComputerName_OSname.ntfsclone.gz"
-or
-"ntfsclone -s /dev/hdX -o - | xz -9ekvcC sha256 > /path/to/ComputerName_OSname.ntfsclone.xz"
+         /path/to/ComputerName_OSname.ntfsclone.xz = path and name of backup file
+print list of devices with "fdisk -l"
 
-"ntfsclone --save-image --output - /dev/hdX | gzip -c > /path/to/ComputerName_OSname_backup_date.bin.gz"
-To restore a partition:
-"gzip -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone --restore-image --overwrite /dev/hdX -"
-or
-"xz-dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone --restore-image --overwrite /dev/hdX -"
+To backup & restore a partition with no compression:
+"ntfsclone -s /dev/hdX -o /path/to/ComputerName_OSname.ntfsclone"
+"ntfsclone -rO /dev/hdX /path/to/ComputerName_OSname.ntfsclone"
+
+To backup & restore a partition with xz on highest compression with sha256 checksums:
+"ntfsclone -s /dev/hdX -o - | xz -9ekvcC sha256 > /path/to/ComputerName_OSname.ntfsclone.xz"
+"xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -"
+
+To backup & restore a partition with gzip:
+"ntfsclone -s /dev/hdX -o - | gzip -c > /path/to/ComputerName_OSname.ntfsclone.gz"
+"gzip -dc /path/to/ComputerName_OSname.ntfsclone.gz | ntfsclone -rO /dev/hdX -"
 
 IMPORTANT--> after you clone the partition to any location it is an exact copy and WILL NOT work OR be repairable unless it is in the EXACT SAME LOCATION;
 The offset that is stored in the boot sector will be wrong. to fix this we MUST change the offset. see "Moving NTFS VOLUMES"
