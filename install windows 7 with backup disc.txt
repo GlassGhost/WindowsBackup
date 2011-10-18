@@ -1,4 +1,3 @@
-
 ==install windows with backup disc==
 CLEAR the drive and create a 12.5gb partition as the 1st partition, this can be done with gparted.
 
