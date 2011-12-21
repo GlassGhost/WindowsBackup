@@ -1,58 +1,57 @@
-==install windows with backup disc==
-CLEAR the drive and create a 12.5gb partition as the 1st partition, this can be done with gparted.
+==Backing up and restoring Windows==
+tools needed:
+	a linux live cd preferably a new one
+	most live cd's contain:
+	ntfsclone
+	dd
+	xz or gzip not necessary
 
-Install Windows to the 1st 12.5gb partition; if you have Vista or Win7 view the problem(and solution) about doing this.
+To make a backup disc for windows you just need to know 2 commands;
+dd & ntfsclone
 
-Install minimal amounts of drivers and software
+CLEAR the drive and create a 12.5gb partition as the 1st partition, this can be done with gparted. Then install Windows to this partition.
 
-Using non confusing names that give all pertinent info about the files for instance the name of computer and date of backup.
-backup the boot sector
-backup the Windows partition
-KEEP copies of these 2 files on ANOTHER DRIVE or cd if you used xz
-
-then use gparted to expand the NTFS volume as you please.
-NOTE: after you do this when windows asks to scan the drive DON'T
-
-===To backup and restore boot sector===
 where:   /path/to/ComputerName_DriveName.boot = path and name of backup file
          /dev/hdX = device name
 print list of devices with "fdisk -l"
+
 To backup boot sector:
-dd bs=512 count=1 if=/dev/hdX of=/path/to/ComputerName_DriveName.boot
+	dd bs=512 count=1 if=/dev/hdX of=/path/to/ComputerName_DriveName.boot
+
 To restore a boot sector:
-dd if=/path/to/ComputerName_DriveName.boot of=/dev/hdX
+	dd if=/path/to/ComputerName_DriveName.boot of=/dev/hdX
 
-===To backup or restore NTFS partitions===
-BEFORE YOU backup ANY Windows partition. ALWAYS make sure you have used regedit to delete all the non-empty entries in:"HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
+To restore a partition with no compression:
+	ntfsclone -s /dev/hdX -o /path/to/ComputerName_OSname.ntfsclone
+To restore a partition with no compression:
+	ntfsclone -rO /dev/hdX /path/to/ComputerName_OSname.ntfsclone
 
-where:   /dev/hdX = device name followed by partition # "X"
-         /path/to/ComputerName_OSname.ntfsclone.xz = path and name of backup file
-print list of devices with "fdisk -l"
+To backup a partition with xz on highest compression with sha256 checksums:
+	ntfsclone -s /dev/hdX -o - | xz -9ekvcC sha256 > /path/to/ComputerName_OSname.ntfsclone.xz
+To restore a partition with xz compression:
+	xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -
 
-To backup & restore a partition with no compression:
-"ntfsclone -s /dev/hdX -o /path/to/ComputerName_OSname.ntfsclone"
-"ntfsclone -rO /dev/hdX /path/to/ComputerName_OSname.ntfsclone"
+backup the boot sector
+backup the Windows partition
+KEEP copies of these 2 files on ANOTHER DRIVE or dvd if you used xz
 
-To backup & restore a partition with xz on highest compression with sha256 checksums:
-"ntfsclone -s /dev/hdX -o - | xz -9ekvcC sha256 > /path/to/ComputerName_OSname.ntfsclone.xz"
-"xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -"
+After you have backed up or restored the partition you may then use gparted to grow the NTFS volume as you wish.
+NOTE: after you do this when windows asks to scan the drive DON'T let it.
 
-To backup & restore a partition with gzip:
-"ntfsclone -s /dev/hdX -o - | gzip -c > /path/to/ComputerName_OSname.ntfsclone.gz"
-"gzip -dc /path/to/ComputerName_OSname.ntfsclone.gz | ntfsclone -rO /dev/hdX -"
+BEFORE YOU backup ANY Windows partition. ALWAYS make sure you have used regedit to delete all the non-empty entries in:"HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices" This MUST be done on the shut-down right before a backup in order to allow booting on another hard-drive.
 
-IMPORTANT--> after you clone the partition to any location it is an exact copy and WILL NOT work OR be repairable unless it is in the EXACT SAME LOCATION;
-The offset that is stored in the boot sector will be wrong. to fix this we MUST change the offset. see "Moving NTFS VOLUMES"
+Reduce your "restore-file"'s size by 1-2gb you may want to go to:
+System Properties->Advanced->Performance Settings->Advanced->Change
+then click No Paging File followed by set AND ok and reboot
+Then go back to that same menu and click System Managed Size followed by set AND ok, and then remove the mounted devices entry in regedit as described earlier, then reboot AND DO NOT BOOT INTO WINDOWS UNTIL AFTER you have deleted the pagefile AND "hyberfile.sys" if it exists.
+
+I've had trouble compressing, not decompressing with xz on older hardware as it is too demanding on the machine. If you want a smaller file size you may have to backup with no compression then transfer the file to a stronger machine and compress it later with:
+	xz -v9ekC sha256 -T 2 /path/to/ComputerName_OSname.ntfsclone
 
 ==restoring from previous backup==
 restore the boot sector with out destroying the "partition info", restoring just the Windows "partition info"
 refer to mbr info to do this
 EXAMPLE:dd if=/media/sda2/WINXPSR1930NXbackup10-8-2010.boot bs=462 count=1 of=/dev/sda
-
-restore the windows partition then grow it as you wish.
-NOTE: after you do this if windows asks to scan the drive DON'T.
-
-you are done.
 
 ===MBR INFO===
 MBR SECTOR NAME				BYTES
@@ -89,7 +88,7 @@ Type Exit to leave Diskpart. Type Exit to close the command prompt. Now continue
 /*end Windows7 install*/
 
 ===Moving NTFS partitions===
-special thanx to Michael Dominok @ http://www.dominok.net/en/it/en.it.clonexp.html
+Strongly advised not to be done. this how-to is thanx to Michael Dominok @ http://www.dominok.net/en/it/en.it.clonexp.html
 
 Now, the boot-sectors of the newly cloned partition have to be modified. The partition(s) in front of the new ones have to be "skipped". This is done by inserting an offset into the partitions boot-sector. But first we've got to determine where they start. "fdisk -ul /dev/hda" shows:
 
@@ -115,31 +114,7 @@ This is simply done by running the Vista/7 startup repair.
 Enter the installation DVD -> Select repair and follow the wizard.
 
 other commands====================
-dd if=/dev/sdb bs=900000 | bzip2 > ./360backup.bz2
-
-ntfsclone --save-image --output - /dev/sda1|gzip -c > /media/sda2/WINXPSR1930NXbackup10-8-2010.gz
-bunzip2 -c /media/sda2/WINXPSR1930NXbackup10-8-2010.gz|ntfsclone --restore-image --overwrite /dev/sda1 -"
-
-dd if=backup.boot of=/dev/hda bs=1
-dd if=/dev/sda of=./WINXPSR1930NXbackupboot10-8-2010.bin bs=512 count=1
-dd if=/dev/sda1 | gzip > /media/sda2/WINXPSR1930NXbackup10-8-2010.gz
-
-bzip2 -dc ./WINXPSR1930NXbackup10-8-2010.bz2 | sudo dd of=/dev/hdx
-
 sudo mkdir /mnt/susv3
 sudo mount -osize=100m tmpfs /mnt/susv3 -t tmpfs
 cd '/mnt/susv3' 
 unlzma -ck '/home/glas/Comp Sci/C/susv3.tlz' | tar xvf -
-
-
-dd if=/dev/sda of=/media/sdb1/ComputerName_DriveName_date.boot bs=512 count=1
-ntfsclone -s /dev/sda1 -o /path/to/ComputerName_OSname.ntfsclone
-
-dd if=/dev/sda of=/media/sda2/SR1930NX_sda.boot bs=512 count=1
-ntfsclone -s /dev/sda1 -o /media/sda2/SR1930NX_WinXP.ntfsclone
-
-ntfsclone -r -O /dev/sda1 /media/sda2/SR1930NX_WinXP.ntfsclone
-xz -9ekvC sha256 /media/sda2/SR1930NX_WinXP.ntfsclone
-
-dd of=/dev/hdX if=/path/to/ComputerName.boot
-xz -c /path/to/ComputerName_OSname_backup_date.bin.xz | ntfsclone -r -O /dev/hdX# -
