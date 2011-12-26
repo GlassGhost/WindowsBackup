@@ -46,7 +46,7 @@ then click No Paging File followed by set AND ok and reboot
 Then go back to that same menu and click System Managed Size followed by set AND ok, and then remove the mounted devices entry in regedit as described earlier, then reboot AND DO NOT BOOT INTO WINDOWS UNTIL AFTER you have deleted the pagefile AND "hyberfile.sys" if it exists.
 
 I've had trouble compressing, not decompressing with xz on older hardware as it is too demanding on the machine. If you want a smaller file size you may have to backup with no compression then transfer the file to a stronger machine and compress it later with:
-	xz -v9ekC sha256 -T 2 /path/to/ComputerName_OSname.ntfsclone
+	xz -v9ekC sha256 -T 2 /path/to/uncompressed/ComputerName_OSname.ntfsclone
 
 ==restoring from previous backup==
 restore the boot sector with out destroying the "partition info", restoring just the Windows "partition info"
