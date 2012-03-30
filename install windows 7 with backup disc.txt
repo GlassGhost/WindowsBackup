@@ -21,7 +21,7 @@ To backup boot sector:
 To restore a boot sector:
 	dd if=/path/to/ComputerName_DriveName.boot of=/dev/hdX
 
-To restore a partition with no compression:
+To backup a partition with no compression:
 	ntfsclone -s /dev/hdX -o /path/to/ComputerName_OSname.ntfsclone
 To restore a partition with no compression:
 	ntfsclone -rO /dev/hdX /path/to/ComputerName_OSname.ntfsclone
