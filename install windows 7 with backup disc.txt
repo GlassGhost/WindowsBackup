@@ -118,3 +118,6 @@ sudo mkdir /mnt/susv3
 sudo mount -osize=100m tmpfs /mnt/susv3 -t tmpfs
 cd '/mnt/susv3' 
 unlzma -ck '/home/glas/Comp Sci/C/susv3.tlz' | tar xvf -
+
+just did this the other day 1 command then the bcdedit:
+xz -dc /media/DATA/Shared/Images/K53TA_WIN7.ntfsclone | ntfsclone -rO /dev/sda1 -
