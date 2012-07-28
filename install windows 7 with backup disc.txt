@@ -16,8 +16,7 @@ where:   /path/to/ComputerName_DriveName.boot = path and name of backup file
 print list of devices with "fdisk -l"
 
 To backup boot sector:
-	dd bs=512 count=1 if=/dev/hdX of=/path/to/ComputerName_DriveName.boot
-
+	dd bs=1M count=1 if=/dev/hdX of=/path/to/ComputerName_DriveName.boot
 To restore a boot sector:
 	dd if=/path/to/ComputerName_DriveName.boot of=/dev/hdX
 
@@ -26,8 +25,23 @@ To backup a partition with no compression:
 To restore a partition with no compression:
 	ntfsclone -rO /dev/hdX /path/to/ComputerName_OSname.ntfsclone
 
+After you have backed up or restored the partition you may then use gparted to grow the NTFS volume as you wish.
+NOTE: after you do this when windows asks to scan the drive DON'T let it.
+
+====BEFORE YOU backup ANY Windows partition.====
+ALWAYS make sure you have used regedit to delete all the non-empty entries in: "HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
+This MUST be done on the shut-down right before a backup, in order to allow booting on another hard-drive.
+
+==== (optional) Reduce your "restore-file"'s size by 1-4gb ====
+System Properties->Advanced->Performance Settings->Advanced->Change
+then click "No Paging File" followed by the "set" button then the "ok" button then another "ok" button then reboot
+then repeat except select "System Managed Size" instead of "No Paging File", and then remove the mounted devices entry in regedit as described earlier THEN DO NOT BOOT INTO WINDOWS UNTIL AFTER YOU HAVE BACKED IT UP (or you have to this whole step again if you don't want the extra 1-2gb in your backup file, from the page-file)
+
+Also the file may still exist but is now safe to delete, you may have to even manually mount the drive in linux and deleted the page-file AND "hyberfile.sys" if either of them exist, before you back up or they may STILL be there. <--- Just about requires special voodoo magic to work around Microsoft retardation.
+
+==Backing up and restoring Windows with compression==
 To backup a partition with xz on highest compression with sha256 checksums:
-	ntfsclone -s /dev/hdX -o - | xz -9ekvcC sha256 > /path/to/ComputerName_OSname.ntfsclone.xz
+	ntfsclone -s /dev/hdX -o - | xz -v9ekC sha256 -T 2 > /path/to/ComputerName_OSname.ntfsclone.xz
 To restore a partition with xz compression:
 	xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -
 
@@ -41,25 +55,13 @@ glas@K53TA:~$ xz -v9ekC sha256 -T 4 '/media/DATA/Shared/Images/E4300_WinXP.ntfsc
 
 500mb restore file!!
 
-backup the boot sector
-backup the Windows partition
-KEEP copies of these 2 files on ANOTHER DRIVE or dvd if you used xz
-
-After you have backed up or restored the partition you may then use gparted to grow the NTFS volume as you wish.
-NOTE: after you do this when windows asks to scan the drive DON'T let it.
-
-====BEFORE YOU backup ANY Windows partition.====
-ALWAYS make sure you have used regedit to delete all the non-empty entries in: "HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
-This MUST be done on the shut-down right before a backup, in order to allow booting on another hard-drive.
-
-Furthermore, to reduce your "restore-file"'s size by 1-2gb you may want to go to:
-System Properties->Advanced->Performance Settings->Advanced->Change
-then click No Paging File followed by set AND ok and reboot
-Then go back to that same menu and click System Managed Size followed by set AND ok, and then remove the mounted devices entry in regedit as described earlier THEN DO NOT BOOT INTO WINDOWS UNTIL AFTER YOU HAVE BACKED IT UP (or you have to this whole step again if you don't want the extra 1-2gb in your backup file, from the page-file) you may have to even manually mount the drive in linux and deleted the page-file AND "hyberfile.sys" if either of them exist, before you back up or they may STILL be there. <--- Just about requires special voodoo magic to work around Microsoft retardation.
-
-==restoring boot sector from previous backup==
+==leaving other partitions unaffected, when restoring boot sector from previous backup==
 restore the boot sector with out destroying the "partition info", restoring just the Windows "partition info"
 refer to mbr info to do this
+
+just make certain not to change the 463rd to 512th bytes in the boot sector
+
+(work in progress)
 EXAMPLE:dd if=/media/sda2/WINXPSR1930NXbackup10-8-2010.boot bs=462 count=1 of=/dev/sda
 
 ===MBR INFO===
