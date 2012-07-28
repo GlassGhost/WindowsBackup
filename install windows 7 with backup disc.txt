@@ -29,7 +29,8 @@ After you have backed up or restored the partition you may then use gparted to g
 NOTE: after you do this when windows asks to scan the drive DON'T let it.
 
 ====BEFORE YOU backup ANY Windows partition.====
-ALWAYS make sure you have used regedit to delete all the non-empty entries in: "HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
+ALWAYS make sure you have used regedit to delete all the non-empty entries in:
+"HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices"
 This MUST be done on the shut-down right before a backup, in order to allow booting on another hard-drive.
 
 ==== (optional) Reduce your "restore-file"'s size by 1-4gb ====
@@ -37,7 +38,7 @@ System Properties->Advanced->Performance Settings->Advanced->Change
 then click "No Paging File" followed by the "set" button then the "ok" button then another "ok" button then reboot
 then repeat except select "System Managed Size" instead of "No Paging File", and then remove the mounted devices entry in regedit as described earlier THEN DO NOT BOOT INTO WINDOWS UNTIL AFTER YOU HAVE BACKED IT UP (or you have to this whole step again if you don't want the extra 1-2gb in your backup file, from the page-file)
 
-Also the file may still exist but is now safe to delete, you may have to even manually mount the drive in linux and deleted the page-file AND "hyberfile.sys" if either of them exist, before you back up or they may STILL be there. <--- Just about requires special voodoo magic to work around Microsoft retardation.
+Also the file may still exist but is now safe to delete, you may have to even manually mount the drive in linux and deleted the pagefile.sys AND "hyberfile.sys" if either of them exist, before you back up or they may STILL be there. <--- Just about requires special voodoo magic to work around Microsoft retardation.
 
 ==Backing up and restoring Windows with compression==
 To backup a partition with xz on highest compression with sha256 checksums:
