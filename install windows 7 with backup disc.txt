@@ -89,8 +89,8 @@ At the first setup screen (Language, Keyboard, etc.) press SHIFT+F10. This will 
 
 - select disk 0
 - clean
-- create partition primary size=12500
-(this creates a partition 12500MB or 12.5gB in size. this is the minimum size I have ever had a successful install with; If you want to use the whole hard drive, just leave off the size=number)
+- create partition primary size=12800
+(this creates a partition 12800MB or 12.5GiB in size. this is the minimum size I have ever had a successful install with; If you want to use the whole hard drive, just leave off the size=number)
 
 - select partition 1
 - active
