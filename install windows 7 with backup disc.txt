@@ -38,7 +38,7 @@ System Properties->Advanced->Performance Settings->Advanced->Change->No Paging F
 then reboot
 System Properties->Advanced->Performance Settings->Advanced->Change->System Managed Size->set->ok->ok
 Then remove the mounted devices entry in regedit as described earlier, then shutdown.
-THEN DO NOT BOOT INTO WINDOWS UNTIL AFTER YOU HAVE BACKED IT UP (or you have to this whole step again if you don't want the extra 1-4gb in your backup file, from the page-file)
+THEN DO NOT BOOT INTO WINDOWS UNTIL AFTER YOU HAVE BACKED IT UP (or you have to do this whole section again if you don't want the extra 1-4gb in your backup file, from the page-file)
 
 Also the file may still exist but is now safe to delete, you may have to even manually mount the drive in linux and delete the pagefile.sys AND "hyberfile.sys" if either of them exist, before you back up or they may STILL be there. <--- Just about requires special voodoo magic to work around Microsoft retardation.
 
