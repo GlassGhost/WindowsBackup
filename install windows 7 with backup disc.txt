@@ -43,13 +43,10 @@ THEN DO NOT BOOT INTO WINDOWS UNTIL AFTER YOU HAVE BACKED IT UP (or you have to 
 Also the file may still exist but is now safe to delete, you may have to even manually mount the drive in linux and delete the pagefile.sys AND "hyberfile.sys" if either of them exist, before you back up or they may STILL be there. <--- Just about requires special voodoo magic to work around Microsoft retardation.
 
 ==Backing up and restoring Windows with compression==
-To backup a partition with xz on highest compression with sha256 checksums:
-	ntfsclone -s /dev/hdX -o - | xz -v9ekC sha256 -T 2 > /path/to/ComputerName_OSname.ntfsclone.xz
-To restore a partition with xz compression:
-	xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -
-
 I've had trouble compressing, not decompressing with xz on older hardware as it is too demanding on the machine. If you want a smaller file size you may have to backup with no compression then transfer the file to a stronger machine and compress it later with:
 	xz -v9ekC sha256 -T 2 /path/to/uncompressed/ComputerName_OSname.ntfsclone
+To restore a partition with xz compression:
+	xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -
 
 also if you have more than 2 cores or threads on your processor you can change the number after the letter 'T' correspondingly, here is a example of a run I actually did on my quad core rig:
 glas@K53TA:~$ xz -v9ekC sha256 -T 4 '/media/DATA/Shared/Images/E4300_WinXP.ntfsclone'
@@ -57,6 +54,13 @@ glas@K53TA:~$ xz -v9ekC sha256 -T 4 '/media/DATA/Shared/Images/E4300_WinXP.ntfsc
   100 %     502.8 MiB / 1,388.7 MiB = 0.362   813 KiB/s      29:08             
 
 500mb restore file!!
+
+==how to compress during backup process==
+I would not suggest compressing during the backup, unless the computer is at least dual core > 2.0ghz , as it takes a while even on faster machines. Decompressing isn't really stressful on any machine.
+To backup a partition with xz on highest compression with sha256 checksums:
+	ntfsclone -s /dev/hdX -o - | xz -v9ekC sha256 -T 2 > /path/to/ComputerName_OSname.ntfsclone.xz
+To restore a partition with xz compression:
+	xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -
 
 ==leaving other partitions unaffected, when restoring boot sector from previous backup==
 restore the boot sector with out destroying the "partition info", restoring just the Windows "partition info"
