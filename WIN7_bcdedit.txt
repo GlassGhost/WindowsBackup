@@ -18,7 +18,7 @@ BCDEdit will return an alphanumeric identifier for this entry that I will refer 
 bcdedit /set {ID} device partition=c:
 The path to our linux.bin file:
 
-bcdedit /set {ID} path /linux.bin
+bcdedit /set {ID} path \linux.bin
 An entry to the displayed menu at boot time:
 
 bcdedit /displayorder {ID} /addlast
@@ -37,6 +37,6 @@ basically it should look like this:
 bcdedit /create /d Linux /application BOOTSECTOR
 The entry {12345} was successfully created.
 bcdedit /set {12345} device partition=c:
-bcdedit /set {12345} path /linux.bin
+bcdedit /set {12345} path \linux.bin
 bcdedit /displayorder {12345} /addlast
 bcdedit /timeout 3
