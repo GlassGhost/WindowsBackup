@@ -31,6 +31,10 @@ On a final note, if at any time you want to eliminate the Linux menu option simp
 
 bcdedit /delete {ID}
 
+also to get a list of IDs in your bcd booter simply run:
+
+bcdedit /enum
+
 ===================================================================================================
 basically it should look like this:
 
