@@ -44,7 +44,7 @@ Also the file may still exist but is now safe to delete, you may have to even ma
 
 ==Backing up and restoring Windows with compression==
 I've had trouble compressing, not decompressing with xz on older hardware as it is too demanding on the machine. If you want a smaller file size you may have to backup with no compression then transfer the file to a stronger machine and compress it later with:
-	xz -v9ekC sha256 -T 2 /path/to/uncompressed/ComputerName_OSname.ntfsclone
+	nice -19 xz -v9ekC sha256 -T 2 /path/to/uncompressed/ComputerName_OSname.ntfsclone
 To restore a partition with xz compression:
 	xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -
 
@@ -58,7 +58,7 @@ glas@K53TA:~$ xz -v9ekC sha256 -T 4 '/media/DATA/Shared/Images/E4300_WinXP.ntfsc
 ==how to compress during backup process==
 I would not suggest compressing during the backup, unless the computer is at least dual core > 2.0ghz , as it takes a while even on faster machines. Decompressing isn't really stressful on any machine.
 To backup a partition with xz on highest compression with sha256 checksums:
-	ntfsclone -s /dev/hdX -o - | xz -v9ekC sha256 -T 2 > /path/to/ComputerName_OSname.ntfsclone.xz
+	ntfsclone -s /dev/hdX -o - | nice -19 xz -v9ekC sha256 -T 2 > /path/to/ComputerName_OSname.ntfsclone.xz
 To restore a partition with xz compression:
 	xz -dc /path/to/ComputerName_OSname.ntfsclone.xz | ntfsclone -rO /dev/hdX -
 
