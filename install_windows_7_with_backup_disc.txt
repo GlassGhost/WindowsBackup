@@ -68,8 +68,13 @@ refer to mbr info to do this
 
 just make certain not to change the 463rd to 512th bytes in the boot sector
 
-(work in progress)
-EXAMPLE:dd if=/media/sda2/WINXPSR1930NXbackup10-8-2010.boot bs=462 count=1 of=/dev/sda
+EXAMPLE(work in progress):
+save current partition info
+dd bs=1M count=1 if=/dev/hdX of=/path/to/external_drive/ComputerName_DriveName.boot
+then
+
+reinstall windows 
+dd if=/media/sda2/WINXPSR1930NXbackup10-8-2010.boot bs=462 count=1 of=/dev/sda
 
 ===MBR INFO===
 MBR SECTOR NAME				BYTES
