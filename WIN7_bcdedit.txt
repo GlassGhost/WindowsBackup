@@ -6,7 +6,7 @@ sudo grub-install --root-directory=/media/LINUX /dev/sda3
 
 Use dd to write the first 512 bytes of your Linux partition to a file on your windows 7 "C partition" that should look something like this:
 
-dd if=/dev/sda3 of=/media/WINDOS7/linux.bin bs=512 count=1
+dd if=/dev/sda3 of=/media/WINDOWS7/linux.bin bs=512 count=1
 
 Then copy this file onto your Windows 7 partition and continue the rest of this guide ther
 
