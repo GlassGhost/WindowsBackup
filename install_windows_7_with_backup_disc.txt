@@ -4,7 +4,11 @@ tools needed:
 	most live cd's contain:
 	ntfsclone
 	dd
-	xz or gzip not necessary
+	xz or gzip not necessary if you don't care about storage space
+result 3 files under 3-4gb that can be used to restore the windows install in 10 mins or less:
+	restore_windows.sh
+	ComputerName_DriveName.boot.xz
+	ComputerName_OSname.ntfsclone.xz
 
 To make a backup disc for windows you just need to know 2 commands;
 dd & ntfsclone
