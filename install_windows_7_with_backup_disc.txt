@@ -150,8 +150,8 @@ just did this the other day 1 command then the bcdedit:
 sudo xz -dc /media/DATA/Shared/Images/K53TA_WIN7.ntfsclone |sudo ntfsclone -rO /dev/sda1 -
 
 
-To backup boot sector:
-	dd bs=1M count=1 if=/dev/hdX of=/path/to/ComputerName_DriveName.boot
+To backup boot sector AND compress it with xz on highest compression with sha256 checksums, at the same time:
+	dd bs=1M count=1 if=/dev/hdX | nice -19 xz -v9ekC sha256 > /path/to/ComputerName_DriveName.boot.xz
 To backup a partition AND compress it with xz on highest compression with sha256 checksums, at the same time:
 	ntfsclone -s /dev/hdX -o - | nice -19 xz -v9ekC sha256 -T 2 > /path/to/ComputerName_OSname.ntfsclone.xz
 To backup a partition with no compression:
