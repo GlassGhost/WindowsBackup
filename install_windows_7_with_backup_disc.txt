@@ -160,3 +160,5 @@ To compress it with xz when you're done:
 	nice -19 xz -v9eC sha256 -T 2 /path/to/ComputerName_OSname.ntfsclone
 
 
+just did this the other day 1 command then the bcdedit:
+sudo xz -dc /media/DATA/Shared/Images/K53TA_WIN7.ntfsclone |sudo ntfsclone -rO /dev/sda1 -
