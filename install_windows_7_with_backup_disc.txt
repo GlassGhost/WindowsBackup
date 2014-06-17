@@ -161,4 +161,4 @@ To compress it with xz when you're done:
 
 
 just did this the other day 1 command then the bcdedit:
-sudo xz -dc /media/DATA/Shared/Images/K53TA_WIN7.ntfsclone |sudo ntfsclone -rO /dev/sda1 -
+sudo xz -dc /media/owner/DATA/Shared/Images/K53TA/K53TA_WIN7SP1.ntfsclone.xz |sudo ntfsclone -rO /dev/sda1 -
