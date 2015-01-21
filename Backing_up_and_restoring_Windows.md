@@ -42,10 +42,10 @@ Example of a run I did on my quad core rig(30 mins to create 500mb restore file!
     /media/DATA/Shared/Images/E4300_WinXP.ntfsclone (1/1)
     100 % 502.8 MiB / 1,388.7 MiB = 0.362 813 KiB/s 29:08             
 
-To backup boot sector AND compress it with xz on highest compression with sha256 checksums, at the same time:
-    dd bs=1M count=1 if=/dev/hdX | nice -19 xz -v9ekC sha256 > /path/to/ComputerName_DriveName.boot.xz
+To backup boot sector AND compress it with xz on highest compression with sha256 checksums, at the same time:  
+`dd bs=1M count=1 if=/dev/hdX | nice -19 xz -v9ekC sha256 > /path/to/ComputerName_DriveName.boot.xz`
 
-(OPTIONAL)To backup a partition with compression **DURING** backup process:
+(OPTIONAL)To backup a partition with compression **DURING** backup process:  
 `ntfsclone -s /dev/hdX1 -o - | nice -19 xz -v9ekC sha256 -T 2 > /path/to/ComputerName_OSname.ntfsclone.xz`
 
 I would not suggest Compressing the partition during the backup, as it takes a while even on
