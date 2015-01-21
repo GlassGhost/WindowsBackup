@@ -1,6 +1,6 @@
 Backing up and restoring Windows
 ================================
-**Objective**: Create 3 files under 3-4gb that can later be used to restore the windows install in 10 mins or less:
+**Objective**: Create 3 files under 3-4gb that can later be used to restore the windows re-install in 10 mins or less:
 
  - restore_windows.sh
  - ComputerName_DriveName.boot.xz
