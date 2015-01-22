@@ -21,7 +21,8 @@ Programs needed:
 _________________
 ## Backup Process
 
-This assumes you have an MBR partition scheme and have [Windows installed to the 1st partition](#windowsinstallprocess).
+This assumes you have an MBR partition scheme and have [Windows installed to the 1st partition](#windowsinstallprocess)
+and that you have followed the "[BEFORE YOU backup ANY Windows partition](#beforeyoubackupanywindowspartition)" procedure.
 
 `/dev/hdX` = device name gotten from list of devices gotten from with `fdisk -l`
 `/dev/hdX1` = partition name gotten from list of devices gotten from with `fdisk -l`
@@ -96,7 +97,7 @@ Again, DO NOT BURN the iso until AFTER you have made certain that the sha1 is ma
 Either through the linux `sha1sum` command or through [Microsoft's checksum tool](http://www.microsoft.com/en-us/download/details.aspx?id=11533)
 
 
-### BEFORE YOU backup ANY Windows partition.
+### BEFORE YOU backup ANY Windows partition
 ALWAYS make sure you have used regedit to delete all the non-empty entries in:  
 `HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices`  
 This MUST be done on the shut-down right before a backup, in order to allow booting on a replacement hard-drive.
