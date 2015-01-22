@@ -85,6 +85,17 @@ Start Linux. CLEAR the drive and create a 16gb partition as the 1st partition,
 this can be done with gparted. Close Linux. Then install Windows to this
 partition.
 
+It doesn't matter if you download Windows Install ISO from an illegitimate site as long as:  
+Before you burn it you test to make certain it's Sha1sum matches, the Official Microsoft released Sha1 for the ISO file in question:  
+[Windows 7](https://msdn.microsoft.com/en-us/subscriptions/downloads/default.aspx#searchTerm=&ProductFamilyId=350&Languages=en&PageSize=100&PageIndex=0&FileId=0)  
+[Windows 8](https://msdn.microsoft.com/en-us/subscriptions/downloads/default.aspx#searchTerm=&ProductFamilyId=545&Languages=en&PageSize=100&PageIndex=0&FileId=0)  
+For instance I searched "Windows 7 Premium Service Pack 1 x64 English" & found under it's details it's sha1 was `6C9058389C1E2E5122B7C933275F963EDF1C07B9`
+Then google search'd for the sha1 of and found a download or torrent.
+
+Again, DO NOT BURN the iso until AFTER you have made certain that the sha1 is matching the Official Microsoft released Sha1 for the ISO file in question.  
+Either through the linux `sha1sum` command or through [Microsoft's checksum tool](http://www.microsoft.com/en-us/download/details.aspx?id=11533)
+
+
 ### BEFORE YOU backup ANY Windows partition.
 ALWAYS make sure you have used regedit to delete all the non-empty entries in:  
 `HKEY_LOCAL_MACHINE\SYSTEM\MountedDevices`  
