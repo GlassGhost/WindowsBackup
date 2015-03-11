@@ -8,10 +8,13 @@ Basically you use linux to setup grub boot for the partition & save the linux.bi
 all you need to do is type this in your windows admin console:
 
     bcdedit /create /d Linux /application BOOTSECTOR
+
+Get the id from the previous line and place it wherever you see 12345
+
     bcdedit /set {12345} device partition=c:
     bcdedit /set {12345} path \linux.bin
     bcdedit /displayorder {12345} /addlast
-    bcdedit /timeout 3
+    bcdedit /timeout 4
 
 ___
 ## Greater Detail of the above
